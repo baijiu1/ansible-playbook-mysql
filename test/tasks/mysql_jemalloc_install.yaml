@@ -1,0 +1,15 @@
+---
+- name: install jemalloc on test
+  vars: 
+    - jemalloc_rpm: "{{ jemalloc | regex_search('jemalloc.*.rpm') }}"
+  shell: "cd {{ get_url_dir }};{{ item }}"
+  with_items:
+    - rpm -ivh {{ jemalloc_rpm }} --force
+    - cp -a /usr/local/jemalloc/lib/libjemalloc.so.2 /usr/lib/
+
+- name: install mysql on test
+  vars: 
+    - mysql_test: "{{ mysql_test_rpm | regex_search('mysql_test.*.rpm') }}"
+  shell: "cd {{ get_url_dir }};{{ item }}"
+  with_items:
+    - rpm -ivh {{ mysql_test }} --force

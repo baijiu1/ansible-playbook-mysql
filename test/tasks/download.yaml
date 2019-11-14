@@ -1,0 +1,8 @@
+- name: download jemalloc on test
+  get_url:
+    url: "{{ jemalloc }}"
+    dest: "{{ get_url_dir }}"
+- name: download mysql on test
+  get_url:
+    url: "{{ mysql_test_rpm }}"
+    dest: "{{ get_url_dir }}"

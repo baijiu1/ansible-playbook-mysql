@@ -1,0 +1,13 @@
+---
+- name: installed dependent on test
+  yum:
+    name:
+    - bc
+    - numactl
+    - numactl-devel
+    - bison
+    - ncurses
+    - ncurses-devel
+    - expect
+    - net-tools
+    state: present
