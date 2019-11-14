@@ -1,0 +1,7 @@
+{% for hst in play_hosts %}
+{% if loop.index0  == 0 %}
+{{ hst }} {{ business_name }}-master-{{ loop.index0 }}
+{% else %}
+{{ hst }} {{ business_name }}-slave-{{ loop.index0 }}
+{% endif %}
+{% endfor %}
