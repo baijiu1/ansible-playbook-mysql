@@ -1,0 +1,6 @@
+---
+- name: copy system_init.sh to host
+  copy: src=system_init.sh dest= "{{ get_url_dir }}"
+
+- name: bash system_init.sh script
+  shell: "cd {{ get_url_dir }};bash system_init.sh"
