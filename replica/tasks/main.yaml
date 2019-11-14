@@ -1,0 +1,34 @@
+---
+- name: install python-netaddr for ipv4 filter on ansible host(local)
+  yum:
+    name:
+      - python-netaddr
+  connection: local
+
+- name: set online exec ip info
+  shell: "echo {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+  register: online_exec_ip
+
+- name: template hosts file create
+  template: src=group_hosts.j2 dest=/tmp/hosts
+
+- name: add hosts file on slave and delegate to master
+  include: add_hosts.yaml
+
+- name: set hostname on slave
+  include: set_host.yaml
+
+- name: wget rpm
+  include: download.yaml
+
+- name: yum dependent
+  include: yum_install.yaml
+
+- name: install jemalloc and mysql
+  include: mysql_jemalloc_install.yaml
+
+- name: install python-pip and mysql-python PyMySQL
+  include: py_install.yaml
+
+- name: rep_mysql.yaml
+  include: rep_mysql.yaml
