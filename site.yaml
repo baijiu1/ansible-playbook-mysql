@@ -1,6 +1,5 @@
 ---
-- hosts: "192.168.90.206,192.168.90.207,192.168.90.208"
-#- hosts: "192.168.0.24,192.168.0.23,192.168.0.25"
+- hosts: "{{ hosts }}"
   remote_user: root 
   roles:
     - { role: replica, when: mysql_roles  == "replica" }
