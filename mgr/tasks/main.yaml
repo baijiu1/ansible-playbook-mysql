@@ -1,0 +1,24 @@
+---
+- name: add hosts file on mgr nodes
+  include: add_hosts.yaml
+
+- name: set hosts file on mgr nodes
+  include: set_host.yaml
+
+- name: template rep change master to sql exec on other nodes
+  template: src=rep_change_other.j2 dest=/tmp/rep_change_other.sql
+
+- name: template rep change master to sql exec on primary node
+  template: src=rep_change_primary.j2 dest=/tmp/rep_change_primary.sql
+
+- name: wget rpm
+  include: download.yaml
+
+- name: yum dependent
+  include: yum_install.yaml
+
+- name: install jemalloc and mysql
+  include: mysql_jemalloc_install.yaml
+
+- name: rep_mysql.yaml
+  include: rep_mysql.yaml
