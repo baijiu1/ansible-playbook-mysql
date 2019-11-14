@@ -1,0 +1,50 @@
+---
+- name: check master hostname
+  shell: "cat /etc/hosts|grep '{{ master_host_info }}'|awk -F ' ' 'END{print $2}'"
+  register: master_hostname_info
+
+- name: get master gtid
+  mysql_replication:
+    mode: getmaster
+    login_user: root
+    login_password: "{{ mysql_pass }}"
+    login_unix_socket: "{{ mysql_socket }}"
+    master_host: "{{ master_host_info }}"
+    master_user: "{{ rep_user }}"
+    master_password: "{{ rep_password }}"
+    master_auto_position: "yes"
+  when: "(online_exec_ip.stdout) != (master_host_info)"
+
+- name: Configure replication on the slave.
+  mysql_replication:
+    mode: changemaster
+    login_user: root
+    login_password: "{{ mysql_pass }}"
+    login_unix_socket: "{{ mysql_socket }}"
+    master_host: "{{ master_hostname_info.stdout }}"
+    master_user: "{{ rep_user }}"
+    master_password: "{{ rep_password }}"
+    master_auto_position: "yes"
+    master_connect_retry: "1"
+  when: "(online_exec_ip.stdout) != (master_host_info)"
+
+- name: Start slave
+  mysql_replication:
+    mode: startslave
+    login_user: root
+    login_password: "{{ mysql_pass }}"
+    login_unix_socket: "{{ mysql_socket }}"
+  when: "(online_exec_ip.stdout) != (master_host_info)"
+
+- name: Get Slave
+  mysql_replication:
+    mode: getslave
+    login_user: root
+    login_password: "{{ mysql_pass }}"
+    login_unix_socket: "{{ mysql_socket }}"
+  register: slave_status
+  when: "(online_exec_ip.stdout) != (master_host_info)"
+
+- name: show slave status
+  debug: var=slave_status verbosity=0
+  when: "(online_exec_ip.stdout) != (master_host_info)"

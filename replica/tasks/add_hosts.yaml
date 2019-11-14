@@ -1,0 +1,20 @@
+---
+- name: add slave local hosts file
+  shell: "{{ item }}"
+  with_items:
+     - cp -a /etc/hosts /etc/hosts.bak
+     - echo > /etc/hosts
+     - echo "127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4" > /etc/hosts
+     - echo "::1         localhost localhost.localdomain localhost6 localhost6.localdomain6" >> /etc/hosts
+     - cat /tmp/hosts >> /etc/hosts
+#    - echo {{ master_ip }} {{ business_name }}-master >> {{ get_url_dir }}{{ business_name }}.hosts
+#    - echo {{ ansible_default_ipv4['address'] }} {{business_name}}-slave >> {{ get_url_dir }}{{ business_name }}.hosts
+#    - cat {{ get_url_dir }}{{ business_name }}.hosts >> /etc/hosts
+
+#- name: register to var on slave
+#  shell: "cat {{ get_url_dir }}{{ business_name }}.hosts"
+#  register: register_hosts_info
+
+#- name: delegate to master hosts file
+#  shell: "echo '{{ register_hosts_info.stdout }}' >> /etc/hosts"
+#  delegate_to: "{{ master_ip }}"

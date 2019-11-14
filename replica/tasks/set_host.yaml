@@ -1,0 +1,13 @@
+---
+- name: set hostname on master
+  shell: "hostnamectl set-hostname {{ business_name }}-master-0"
+  when: (online_exec_ip.stdout) == (master_host_info) and business_name is defined
+
+- name: slave num hostname
+  shell: "cat /etc/hosts|grep '{{ online_exec_ip.stdout }}'|awk -F '-' 'END{print $NF}'|grep -E '[0-9]'"
+  register: slave_num_hostname
+  when: "(online_exec_ip.stdout) != (master_host_info)"
+
+- name: set hostname on slave
+  shell: "hostnamectl set-hostname {{ business_name }}-slave-{{ slave_num_hostname.stdout | int }}"
+  when: (online_exec_ip.stdout) != (master_host_info) and business_name is defined

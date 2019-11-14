@@ -1,0 +1,16 @@
+- name: download jemalloc on slave
+  get_url:
+    url: "{{ jemalloc }}"
+    dest: "{{ get_url_dir }}"
+
+- name: download mysql on master
+  get_url:
+    url: "{{ mysql_master_rpm }}"
+    dest: "{{ get_url_dir }}"
+  when: "(online_exec_ip.stdout) == (master_host_info)"
+
+- name: download mysql on slave
+  get_url:
+    url: "{{ mysql_slave_rpm }}"
+    dest: "{{ get_url_dir }}"
+  when: "(online_exec_ip.stdout) != (master_host_info)"

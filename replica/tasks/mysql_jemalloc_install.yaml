@@ -1,0 +1,44 @@
+---
+- name: install jemalloc on all
+  vars:
+    - jemalloc_rpm: "{{ jemalloc | regex_search('jemalloc.*.rpm') }}"
+  shell: "cd {{ get_url_dir }};{{ item }}"
+  with_items:
+    - rpm -ivh {{ jemalloc_rpm }} --force
+    - cp -a /usr/local/jemalloc/lib/libjemalloc.so.2 /usr/lib/
+    
+- name: install mysql on master
+  vars:
+    - mysql_master: "{{ mysql_master_rpm | regex_search('mysql_master.*.rpm') }}"
+  shell: "cd {{ get_url_dir }};{{ item }}"
+  with_items:
+    - rpm -ivh {{ mysql_master }} --force
+    - mkdir -p /var/lib/mysql/
+    - if [ ! -e /var/lib/mysql/mysql.sock ];then ln -s /tmp/mysql.sock /var/lib/mysql/mysql.sock; fi
+    - chown -R mysql:mysql /var/lib/mysql
+  when: "(online_exec_ip.stdout) == (master_host_info)"
+
+- name: install mysql on slave
+  vars:
+    - mysql_slave: "{{ mysql_slave_rpm | regex_search('mysql_slave.*.rpm') }}"
+  shell: "cd {{ get_url_dir }};{{ item }}"
+  with_items:
+    - rpm -ivh {{ mysql_slave }} --force
+    - mkdir -p /var/lib/mysql/
+    - if [ ! -e /var/lib/mysql/mysql.sock ];then ln -s /tmp/mysql.sock /var/lib/mysql/mysql.sock; fi
+    - chown -R mysql:mysql /var/lib/mysql
+  when: "(online_exec_ip.stdout) != (master_host_info)"
+
+- name: check slave host num
+  shell: "cat /etc/hosts | grep '{{ online_exec_ip.stdout }}' | awk -F '-' 'END{print $NF}'|grep -E '[0-9]'"
+  register: slave_host_num
+  when: "(online_exec_ip.stdout) != (master_host_info)"
+
+- name: check server_id num and change my.cnf parameter on all slve
+  vars:
+    - server_id: "3"
+    - slave_host_num_int: "{{ slave_host_num.stdout | int + 2 }}"
+  shell: "{{ item }}"
+  with_items:
+    - if [ "{{ slave_host_num.stdout | int }}" -gt "1" ];then systemctl stop mysqld;sed -i 's/server-id.*/server-id={{ slave_host_num_int }}/' /app/mysql/my.cnf;sleep 1;rm -rf /data/mysql/auto.cnf;systemctl start mysqld; fi
+  when: "(online_exec_ip.stdout) != (master_host_info)"

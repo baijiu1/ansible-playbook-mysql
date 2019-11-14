@@ -1,0 +1,34 @@
+---
+- name: install python
+  yum:
+    name:
+      - python
+      - python3
+      - python-pip
+      - python-devel
+      - mysql-devel
+  when: "(online_exec_ip.stdout) == (master_host_info)"
+
+- name: install mysql-devel(libmysqlclient)
+  shell: "if [ ! -e /usr/lib/libmysqlclient.so ];then ln -s /usr/lib64/mysql/libmysqlclient.so /usr/lib/libmysqlclient.so; fi"
+  ignore_errors: yes
+  when: "(online_exec_ip.stdout) != (master_host_info)"
+
+- name: pip install pymysql(2.x 3.x) mysqldb(mysql-python 2.x)
+  shell: "{{ item }}"
+  with_items:
+    - pip install PyMySQL
+    - pip3 install PyMySQL
+    - pip install mysql-python
+  register: python_pip_filed_info
+  ignore_errors: yes
+  when: "(online_exec_ip.stdout) != (master_host_info)"
+
+- name: if pip install filed exec this
+  yum:
+    name:
+      - MySQL-python
+      - python36-PyMySQL
+      - python2-PyMySQL
+  ignore_errors: yes
+  when: "'FAILED' in python_pip_filed_info.stderr"
