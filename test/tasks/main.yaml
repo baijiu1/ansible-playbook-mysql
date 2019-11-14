@@ -1,0 +1,9 @@
+---
+- name: wget test rpm on test
+  include: download.yaml
+
+- name: yum dependent on test
+  include: yum_install.yaml
+
+- name: install jemalloc and mysql on test
+  include: mysql_jemalloc_install.yaml
