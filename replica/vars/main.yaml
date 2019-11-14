@@ -1,0 +1,15 @@
+---
+#动态主机清单中的第一个主机,即为master IP:
+master_host_info: "{{ play_hosts | first }}"
+#master_ip: "{{ ansible_eth0['ipv4']['address'] }}"
+business_name: 
+mysql_user: "root"
+mysql_pass: "7AVr7QrdS5rb"
+mysql_port: "3307"
+jemalloc: "https://xxdevops.oss-cn-shanghai.aliyuncs.com/package/mysql/jemalloc-5.2.0-1.el7.x86_64.rpm"
+mysql_master_rpm: "https://xxdevops.oss-cn-shanghai.aliyuncs.com/package/mysql/mysql_master-5.7.26-1.el7.x86_64.rpm"
+mysql_slave_rpm: "https://xxdevops.oss-cn-shanghai.aliyuncs.com/package/mysql/mysql_slave-5.7.26-1.el7.x86_64.rpm"
+mysql_socket: "/tmp/mysql.sock"
+rep_user: "replica"
+rep_password: "spDn31UO4Q0b"
+get_url_dir: "/opt/"
