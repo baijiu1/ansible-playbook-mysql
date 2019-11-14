@@ -1,0 +1,3 @@
+CHANGE MASTER TO MASTER_USER='{{ rep_user }}', MASTER_PASSWORD='{{ rep_password }}' FOR CHANNEL 'group_replication_recovery';
+INSTALL PLUGIN group_replication SONAME 'group_replication.so';
+START GROUP_REPLICATION;
