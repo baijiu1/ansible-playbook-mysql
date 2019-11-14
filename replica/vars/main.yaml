@@ -1,14 +1,14 @@
 ---
 #动态主机清单中的第一个主机,即为master IP:
 master_host_info: "{{ play_hosts | first }}"
-#master_ip: "{{ ansible_eth0['ipv4']['address'] }}"
-business_name: 
+#必须传入一个业务名称，即hostname名称，主从复制根据hostname获取IP进行复制的
+business_name: "{{ business_name }}"
 mysql_user: "root"
 mysql_pass: "7AVr7QrdS5rb"
 mysql_port: "3307"
-jemalloc: "https://xxdevops.oss-cn-shanghai.aliyuncs.com/package/mysql/jemalloc-5.2.0-1.el7.x86_64.rpm"
-mysql_master_rpm: "https://xxdevops.oss-cn-shanghai.aliyuncs.com/package/mysql/mysql_master-5.7.26-1.el7.x86_64.rpm"
-mysql_slave_rpm: "https://xxdevops.oss-cn-shanghai.aliyuncs.com/package/mysql/mysql_slave-5.7.26-1.el7.x86_64.rpm"
+jemalloc: "这里是自己的rpm包"
+mysql_master_rpm: "mysql主库rpm包"
+mysql_slave_rpm: "mysql从库rpm包"
 mysql_socket: "/tmp/mysql.sock"
 rep_user: "replica"
 rep_password: "spDn31UO4Q0b"
