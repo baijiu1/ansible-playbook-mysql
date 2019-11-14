@@ -1,0 +1,7 @@
+---
+- name: cat hostname on online host
+  shell: "cat /etc/hosts|grep '{{ online_exec_ip.stdout }}'|awk -F ' ' 'END{print $2}'"
+  register: online_hostname
+
+- name: set hostname on mgr nodes
+  shell: "hostnamectl set-hostname {{ online_hostname.stdout }}"

@@ -1,0 +1,30 @@
+---
+- name: install jemalloc on mgr nodes
+  vars:
+    - jemalloc_rpm: "{{ jemalloc | regex_search('jemalloc.*.rpm') }}"
+  shell: "cd {{ get_url_dir }};{{ item }}"
+  with_items:
+    - rpm -ivh {{ jemalloc_rpm }} --force
+    - cp -a /usr/local/jemalloc/lib/libjemalloc.so.2 /usr/lib/
+    
+- name: install mysql on mgr nodes
+  vars:
+    - mysql_group: "{{ mysql_group_rpm | regex_search('mysql_group.*.rpm') }}"
+  shell: "cd {{ get_url_dir }};{{ item }}"
+  with_items:
+    - rpm -ivh {{ mysql_group }} --force
+    - mkdir -p /var/lib/mysql/
+    - if [ ! -e /var/lib/mysql/mysql.sock ];then ln -s /tmp/mysql.sock /var/lib/mysql/mysql.sock; fi
+    - chown -R mysql:mysql /var/lib/mysql
+    
+- name: check online mgr node's num
+  shell: "cat /etc/hosts | grep '{{ online_exec_ip.stdout }}' | awk -F '-' 'END{print $NF}'|grep -E '[0-9]'"
+  register: online_mgr_num
+
+- name: check online host num and change server id parameter
+  vars:
+    - slave_host_num_int: "{{ online_mgr_num.stdout | int + 3 }}"
+  shell: "{{ item }}"
+  with_items:
+    - if [ "{{ online_mgr_num.stdout | int }}" -gt "1" ];then systemctl stop mysqld;sed -i 's/server-id.*/server-id={{ slave_host_num_int }}/' /app/mysql/my.cnf;sleep 1;rm -rf /data/mysql/auto.cnf;systemctl start mysqld; fi
+

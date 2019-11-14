@@ -1,0 +1,14 @@
+---
+- name: MGR Change Master To On Primary node
+  mysql_db:
+    state: import
+    name: all
+    target: /tmp/rep_change_primary.sql
+  when: "(online_mgr_num.stdout) == '1'"
+
+- name: MGR Change Master To On other nodes
+  mysql_db:
+    state: import
+    name: all
+    target: /tmp/rep_change_other.sql
+  when: "(online_mgr_num.stdout) != '1'"
