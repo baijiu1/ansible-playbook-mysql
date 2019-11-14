@@ -1,4 +1,7 @@
 ---
+- name: system init scripts
+  include: system_init.yaml
+
 - name: install python-netaddr for ipv4 filter on ansible host(local)
   yum:
     name:
